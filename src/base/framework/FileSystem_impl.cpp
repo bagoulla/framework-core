@@ -56,9 +56,10 @@ FileSystem_impl::FileSystem_impl ()
     bool fsOpSuccess = false;
     while (!fsOpSuccess) {
         try {
+#if BOOST_VERSION < 104500
             if (fs::path::default_name_check_writable())
                 { fs::path::default_name_check(fs::portable_posix_name); }
-
+#endif
             root = fs::initial_path();
             fsOpSuccess = true;
         } catch ( const fs::filesystem_error& ex ) {
@@ -285,12 +286,20 @@ CF::FileSystem::FileInformationSequence* FileSystem_impl::list (const char* patt
     fs::path dirPath(filePath.parent_path());
 
     std::string searchPattern;
+#if BOOST_VERSION > 104500
+    if ((filePath.filename().string() == ".") && (fs::is_directory(filePath))) {
+        searchPattern = "*";
+    } else {
+        searchPattern = filePath.filename().string();
+    }
+#else
     if ((filePath.filename() == ".") && (fs::is_directory(filePath))) {
         searchPattern = "*";
     } else {
         searchPattern = filePath.filename();
     }
 
+#endif
     LOG_TRACE(FileSystem_impl, "[FileSystem::list] using searchPattern " << searchPattern << " in " << filePath.parent_path());
 
     CF::FileSystem::FileInformationSequence_var result = new CF::FileSystem::FileInformationSequence;
@@ -303,12 +312,22 @@ CF::FileSystem::FileInformationSequence* FileSystem_impl::list (const char* patt
     while (!fsOpSuccess) {
         try {
             for (fs::directory_iterator itr(dirPath); itr != end_itr; ++itr) {
+#if BOOST_VERSION > 104500 
+                if (fnmatch(searchPattern.c_str(), itr->path().filename().string().c_str(), 0) == 0) {
+                    if ((itr->path().filename().string().length() > 0) && (itr->path().filename().string()[0] == '.') && (itr->path().filename().string() != searchPattern)) {
+                        LOG_TRACE(FileSystem_impl, "[FileSystem::list] found hidden match and ignoring " << itr->path().filename().string());
+                        continue;
+                    }
+                    LOG_TRACE(FileSystem_impl, "[FileSystem::list] match in list with " << itr->path().filename().string());
+#else 
                 if (fnmatch(searchPattern.c_str(), itr->filename().c_str(), 0) == 0) {
                     if ((itr->filename().length() > 0) && (itr->filename()[0] == '.') && (itr->filename() != searchPattern)) {
                         LOG_TRACE(FileSystem_impl, "[FileSystem::list] found hidden match and ignoring " << itr->filename());
                         continue;
                     }
                     LOG_TRACE(FileSystem_impl, "[FileSystem::list] match in list with " << itr->filename());
+#endif
+
                     CORBA::ULong index = result->length();
                     result->length(index + 1);
                    
@@ -316,7 +335,11 @@ CF::FileSystem::FileInformationSequence* FileSystem_impl::list (const char* patt
                     if (strlen(pattern) == 0) {
                         result[index].name = CORBA::string_dup("/");
                     } else {
+#if BOOST_VERSION > 104500 
+                        result[index].name = CORBA::string_dup(itr->path().filename().string().c_str());
+#else
                         result[index].name = CORBA::string_dup(itr->filename().c_str());
+#endif
                     }
                     bool readonly = (access(itr->path().string().c_str(), W_OK));
                     if (fs::is_directory(*itr)) {
@@ -329,7 +352,11 @@ CF::FileSystem::FileInformationSequence* FileSystem_impl::list (const char* patt
                         } catch ( ... ) {
                             // this file is not good (i.e.: bad link)
                             result->length(index);
+#if BOOST_VERSION > 104500 
+                            LOG_WARN(FileSystem_impl, "[FileSystem::list] found a file that cannot be evaluated: " << itr->path().filename().string() << ". Not listing it.");
+#else
                             LOG_WARN(FileSystem_impl, "[FileSystem::list] found a file that cannot be evaluated: " << itr->filename() << ". Not listing it.");
+#endif
                             continue;
                         }
                     }
@@ -345,7 +372,11 @@ CF::FileSystem::FileInformationSequence* FileSystem_impl::list (const char* patt
                     prop[3].id = CORBA::string_dup("READ_ONLY");
                     prop[3].value <<= CORBA::Any::from_boolean(readonly);
                     prop[4].id = CORBA::string_dup("IOR_AVAILABLE");
+#if BOOST_VERSION > 104500
+                    std::string localFilename = itr->path().string();
+#else
                     std::string localFilename = itr->string();
+#endif
                     prop[4].value = ossie::strings_to_any(getFileIOR(localFilename), CORBA::tk_string);
                     result[index].fileProperties = prop;
                 }

@@ -710,7 +710,11 @@ int main(int argc, char* argv[])
                 } else if (path.filename().compare(DOM_FOLDER) == 0){
                     dmdPath = "/" + DOM_FOLDER + temp;
                 }
+#if BOOST_VERSION > 104500
+                temp = "/" + path.filename().string() + temp;
+#else
                 temp = "/" + path.filename() + temp;
+#endif
                 path = path.parent_path();
             } else {
                 std::cerr << "[nodeBooter] ERROR: can't find relative dmd.xml path" << std::endl;
@@ -743,7 +747,11 @@ int main(int argc, char* argv[])
                     dcdPath = "/" + NODE_FOLDER + temp;
                 }
 
+#if BOOST_VERSION > 104500
+                temp = "/" + path.filename().string() + temp;
+#else
                 temp = "/" + path.filename() + temp;
+#endif
                 path = path.parent_path();
             } else {
                 std::cerr << "[nodeBooter] ERROR: can't find relative dcd.xml path" << std::endl;

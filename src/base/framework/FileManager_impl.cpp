@@ -23,11 +23,15 @@
 #include <string>
 #include <algorithm>
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/exception.hpp>
-
 #ifndef BOOST_VERSION
 #include <boost/version.hpp>
+#endif
+
+#include <boost/filesystem/path.hpp>
+#if BOOST_VERSION > 104500
+#  include <boost/filesystem/operations.hpp>
+#else
+#  include <boost/filesystem/exception.hpp>
 #endif
 
 #if BOOST_VERSION < 103499
@@ -57,9 +61,11 @@ FileManager_impl::FileManager_impl (const char* _fsroot): FileSystem_impl (_fsro
     bool fsOpSuccess = false;
     while (!fsOpSuccess) {
         try {
+
+#if BOOST_VERSION < 104500
             if (fs::path::default_name_check_writable())
                 { fs::path::default_name_check(boost::filesystem::portable_posix_name); }
-
+#endif
             numMounts = 0;
             mount_table = new CF::FileManager::MountSequence(5);
             fsOpSuccess = true;
