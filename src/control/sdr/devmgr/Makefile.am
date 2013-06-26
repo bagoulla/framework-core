@@ -23,7 +23,7 @@ AM_LDFLAGS = $(BOOST_LDFLAGS) $(OMNIORB_LIBS) $(LOG4CXX_LIBS)
 INCLUDES = -I../../include -I../../parser
 
 DeviceManager_SOURCES = main.cpp DeviceManager_impl.cpp
-DeviceManager_LDADD = ../../framework/libossiecf.la ../../parser/libossieparser.la ../../framework/idl/libossieidl.la
+DeviceManager_LDADD = $(BOOST_LDFLAGS) $(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS) ../../framework/libossiecf.la ../../parser/libossieparser.la ../../framework/idl/libossieidl.la
 DeviceManager_LDFLAGS = -static
 
 devmgrdir = $(SDR_ROOT)/dev/mgr
