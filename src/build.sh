@@ -28,7 +28,7 @@ if [ "$1" == "clean" ]; then
 else
  if [[ $config_ac -nt $makefile || $make_am -nt $makefile ]]; then
   ./reconf
-  ./configure
+  ./configure 'CXXFLAGS=-fpermissive'
  fi
  make -j
  exit 0
