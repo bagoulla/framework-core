@@ -87,20 +87,6 @@ idldir=`pkg-config --variable=idldir omniORB4`
 AC_MSG_RESULT([$idldir])
 AC_SUBST(IDLDIR, [$idldir])
 
-dnl Executable is named xsdcxx in Fedora epel repo, REDHAWK dep is named xsd
-AC_CHECK_PROGS([XSD], [xsdcxx xsd], [no])
-if test x"$XSD" = xno ; then
-	AC_MSG_ERROR([Required program 'xsdcxx' is missing.])
-fi
-# Get the XSD version
-AC_MSG_CHECKING([xsd version])
-xsd_version=`${XSD} version 2>&1 | head -n 1 | awk '{print $8}'`
-if test "x$xsd_version" != "x3.3.0"; then
-    AC_MSG_FAILURE([XSD version 3.3.0 required])
-else
-    AC_MSG_RESULT([$xsd_version])
-fi
-AC_CHECK_HEADER([xsd/cxx/config.hxx], [], [AC_MSG_ERROR([missing XSD headers])])
 AC_CHECK_PROG([XMLCATALOG], [xmlcatalog], [xmlcatalog], [no])
 AM_CONDITIONAL(HAVE_XMLCATALOG, test $XMLCATALOG != "no")
 
