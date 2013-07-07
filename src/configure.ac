@@ -228,7 +228,6 @@ AC_CONFIG_FILES(Makefile \
                 control/Makefile \
                 control/idl/Makefile \
                 control/framework/idl/Makefile \
-                control/parser/Makefile \
                 control/framework/Makefile \
                 control/include/Makefile \
                 control/include/ossie/Makefile \
@@ -246,7 +245,6 @@ AC_CONFIG_FILES(Makefile \
                 base/idl/Makefile \
                 base/include/ossie/Makefile \
                 base/include/Makefile \
-                base/parser/Makefile \
                 base/xml/Makefile \
                 testing/Makefile \
                 testing/helpers/buildconfig.py \
