@@ -53,6 +53,6 @@ list<int>::iterator iter = x.begin(); if (iter != x.end()) ++iter; return 0;],
  AC_LANG_RESTORE
 ])
 if test "$ac_cv_cxx_have_stl" = yes; then
-  AC_DEFINE(HAVE_STL,,[define if the compiler supports Standard Template Library])
+  AC_DEFINE(HAVE_STL,[1],[define if the compiler supports Standard Template Library])
 fi
 ])
