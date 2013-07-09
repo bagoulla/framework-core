@@ -53,6 +53,6 @@ int f(bool x){return 1;}
  AC_LANG_RESTORE
 ])
 if test "$ac_cv_cxx_bool" = yes; then
-  AC_DEFINE(HAVE_BOOL,,[define if bool is a built-in type])
+  AC_DEFINE(HAVE_BOOL,[1],[define if bool is a built-in type])
 fi
 ])

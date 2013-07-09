@@ -256,6 +256,6 @@ ac_cv_vector_impl,
  AC_LANG_RESTORE
 ])
 if test "$ac_cv_vector_impl" = yes; then
-  AC_DEFINE(EXPECTED_VECTOR_IMPL,,[define checks for a specific implementation of vector])
+  AC_DEFINE(EXPECTED_VECTOR_IMPL, 1,[define checks for a specific implementation of vector])
 fi
 ])
