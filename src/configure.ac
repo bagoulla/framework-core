@@ -102,20 +102,6 @@ idldir=`pkg-config --variable=idldir omniORB4`
 AC_MSG_RESULT([$idldir])
 AC_SUBST(IDLDIR, [$idldir])
 
-dnl Executable is named xsdcxx in Fedora epel repo, REDHAWK dep is named xsd
-AC_CHECK_PROGS([XSD], [xsdcxx xsd], [no])
-if test x"$XSD" = xno ; then
-	AC_MSG_ERROR([Required program 'xsdcxx' is missing.])
-fi
-# Get the XSD version
-AC_MSG_CHECKING([xsd version])
-xsd_version=`${XSD} version 2>&1 | head -n 1 | awk '{print $8}'`
-if test "x$xsd_version" != "x3.3.0"; then
-    AC_MSG_FAILURE([XSD version 3.3.0 required])
-else
-    AC_MSG_RESULT([$xsd_version])
-fi
-AC_CHECK_HEADER([xsd/cxx/config.hxx], [], [AC_MSG_ERROR([missing XSD headers])])
 AC_CHECK_PROG([XMLCATALOG], [xmlcatalog], [xmlcatalog], [no])
 AM_CONDITIONAL(HAVE_XMLCATALOG, test $XMLCATALOG != "no")
 
@@ -130,16 +116,6 @@ OSSIE_ENABLE_TRACE
 OSSIE_ENABLE_PERSISTENCE
 
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
-
-AC_ARG_ENABLE([xml_validation], AS_HELP_STRING([--disable-xml-validation], [Disable xml validation in the parsers]))
-AC_MSG_CHECKING([if xml parsers should perform validation])
-if test "x$enable_xml_validation" != "xno"; then
-  AC_SUBST(OSSIE_XSDFLAGS, "--generate-validation")
-  AC_MSG_RESULT([yes])
-else
-  AC_SUBST(OSSIE_XSDFLAGS, "--suppress-validation")
-  AC_MSG_RESULT([no])
-fi
 
 # Allow user to explictly prevent JAVA compilation
 AC_ARG_ENABLE([java], AS_HELP_STRING([--disable-java], [Disable framework java support]))
